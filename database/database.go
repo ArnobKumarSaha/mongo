@@ -36,3 +36,9 @@ func ListCollectionsForAllDatabases(client *mongo.Client) map[string][]string {
 	}
 	return mp
 }
+
+func DBStats(ctx context.Context, client *mongo.Client, db string) (map[string]interface{}, error) {
+	dbStats := make(map[string]interface{})
+	err := client.Database(db).RunCommand(ctx, bson.D{{Key: "dbStats", Value: 1}}).Decode(&dbStats)
+	return dbStats, err
+}

@@ -2,12 +2,23 @@ package latency
 
 import (
 	"context"
+	"github.com/ArnobKumarSaha/mongo/database"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"k8s.io/klog/v2"
 	"log"
 	"sort"
 )
+
+func Run(client *mongo.Client) {
+	collMap := database.ListCollectionsForAllDatabases(client)
+	for db, collections := range collMap {
+		for _, coll := range collections {
+			CalculateLatency(client.Database(db), coll)
+		}
+	}
+	PrintLatencyStats()
+}
 
 type read struct {
 	latency, ops int64
