@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	client := mongoclient.ConnectLocal()
+	client := mongoclient.ConnectFromPod()
 	defer func() {
 		if err := client.Disconnect(context.Background()); err != nil {
 			log.Fatal(err)

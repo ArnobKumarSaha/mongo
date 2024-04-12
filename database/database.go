@@ -2,8 +2,11 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"strings"
 )
 
 func ListDatabases(client *mongo.Client) []string {
@@ -41,4 +44,45 @@ func DBStats(ctx context.Context, client *mongo.Client, db string) (map[string]i
 	dbStats := make(map[string]interface{})
 	err := client.Database(db).RunCommand(ctx, bson.D{{Key: "dbStats", Value: 1}}).Decode(&dbStats)
 	return dbStats, err
+}
+
+// GetPrimaryAndSecondaries return the hosts. 0th element is primary, others are secondary
+func GetPrimaryAndSecondaries(ctx context.Context, client *mongo.Client) ([]string, error) {
+	adminDB := client.Database("admin")
+	var result bson.M
+	err := adminDB.RunCommand(ctx, bson.D{{"replSetGetStatus", 1}}).Decode(&result)
+	if err != nil {
+		fmt.Println("Error running rs.status():", err)
+		return nil, err
+	}
+
+	members, ok := result["members"].(primitive.A)
+	if !ok {
+		fmt.Println("Error parsing members array")
+		return nil, err
+	}
+
+	primary := ""
+	var secondaries []string
+	for _, member := range members {
+		memberInfo, ok := member.(primitive.M)
+		if !ok {
+			fmt.Println("Error parsing member information")
+			continue
+		}
+
+		// Check member state
+		state := memberInfo["state"].(int32)
+		if state == 1 {
+			primary = memberInfo["name"].(string)
+		} else if state == 2 {
+			secondaries = append(secondaries, memberInfo["name"].(string))
+		}
+	}
+	var ret []string
+	ret = append(ret, strings.Split(primary, ".")[0])
+	for _, secondary := range secondaries {
+		ret = append(ret, strings.Split(secondary, ".")[0])
+	}
+	return ret, nil
 }
