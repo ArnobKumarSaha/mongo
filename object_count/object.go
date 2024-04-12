@@ -6,6 +6,7 @@ import (
 	"github.com/ArnobKumarSaha/mongo/database"
 	"github.com/ArnobKumarSaha/mongo/k8s"
 	"github.com/ArnobKumarSaha/mongo/mongoclient"
+	"go.mongodb.org/mongo-driver/mongo"
 	"k8s.io/klog/v2"
 	kubedb "kubedb.dev/apimachinery/apis/kubedb/v1alpha2"
 	"log"
@@ -21,9 +22,7 @@ var (
 	err          error
 )
 
-func Run() {
-	config := k8s.GetRESTConfig()
-	_ = k8s.GetClient(config)
+func Run(client *mongo.Client) {
 	mg, err = mongoclient.GetMongoDB()
 	if err != nil {
 		klog.Fatal(err)
@@ -35,9 +34,7 @@ func Run() {
 	}
 	password = string(secret.Data["password"])
 
-	klog.Infof("MongoDB found %v \n", mg.Name)
-
-	client := mongoclient.ConnectFromPod()
+	klog.Infof("MongoDB found : %v \n", mg.Name)
 	hosts, err := database.GetPrimaryAndSecondaries(context.TODO(), client)
 	if err != nil {
 		_ = fmt.Errorf("error while getting primary and secondaries %v", err)
@@ -46,22 +43,9 @@ func Run() {
 	primaryPod = hosts[0]
 	secondaryPod = hosts[1]
 
-	//tunnel, err := mongoclient.TunnelToDBService(config, mg.Namespace, mg.Name)
-	//if err != nil {
-	//	klog.Fatal(err)
-	//	return
-	//}
-	//
-	//klog.Infof("Tunnel created for svc at %v \n", tunnel.Local)
-	//
-	//err = getPrimaryAndSecondary(tunnel)
-	//if err != nil {
-	//	return
-	//}
-
 	klog.Infof("Primary and Secondary found! %v %v \n", primaryPod, secondaryPod)
 
-	tunnelPod, err := mongoclient.TunnelToDBPod(config, mg.Namespace, secondaryPod)
+	tunnelPod, err := mongoclient.TunnelToDBPod(k8s.GetRESTConfig(), mg.Namespace, secondaryPod)
 	if err != nil {
 		return
 	}

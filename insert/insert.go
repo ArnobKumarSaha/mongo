@@ -15,8 +15,8 @@ var (
 	stopPrinting chan struct{}
 	start        time.Time
 
-	dataSize      = 1024 * 1024 * 512
-	batchSize     = 200000
+	dataSize      = 1024 * 1024 * 1024 * 3 // 1024 * 1024 * 1024 = 1Gi
+	batchSize     = 100000
 	numGoroutines = 5
 	databases     = []string{"aa", "bb", "cc"}
 	collections   = []string{"one", "two", "three", "four"}
