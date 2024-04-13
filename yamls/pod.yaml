@@ -7,13 +7,18 @@ spec:
   containers:
   - env:
     - name: MONGODB_NAME
-      value: source
+      value: "source"
     - name: MONGODB_NAMESPACE
-      value: demo
+      value: "demo"
+    - name: INSERTION_SIZE_IN_GiB
+      value: "100"
     image: arnobkumarsaha/mongo-util
     imagePullPolicy: Always
     name: util
-    resources: {}
+    resources:
+      requests:
+        cpu: 1
+        memory: 1Gi
   dnsPolicy: ClusterFirst
   serviceAccountName: mongo-util
   restartPolicy: Always

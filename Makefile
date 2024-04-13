@@ -1,17 +1,16 @@
-all:
-	#export CGO_ENABLED=0
-	#go build
-	docker build -t arnobkumarsaha/mongo-util .
-	docker push arnobkumarsaha/mongo-util
-	#kind load docker-image arnobkumarsaha/mongo-util
+all: image
 	kubectl apply -f yamls/rbac.yaml
 	kubectl apply -f yamls/pod.yaml
 
 run:
 	kubectl delete -f yamls/pod.yaml || true
+	$(MAKE) image
+	kubectl apply -f yamls/pod.yaml
+
+image:
 	docker build -t arnobkumarsaha/mongo-util .
 	docker push arnobkumarsaha/mongo-util
-	kubectl apply -f yamls/pod.yaml
+	#kind load docker-image arnobkumarsaha/mongo-util
 
 clean:
 	kubectl delete -f yamls/pod.yaml

@@ -17,12 +17,12 @@ func checkCondition(ctx context.Context, client *mongo.Client) {
 		select {
 		case <-ticker.C:
 			sz, _ := calcTotalStorageSize(ctx, client)
+			convertToReadableUnit(sz)
 			if int(sz) >= dataSize {
 				fmt.Printf("Stopping all goroutines. Time elapsed: %v\n", time.Since(start))
 				close(stopPrinting)
 				return
 			}
-			convertToReadableUnit(sz)
 		}
 	}
 }
