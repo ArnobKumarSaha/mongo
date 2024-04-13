@@ -16,10 +16,11 @@ make
 ```bash
 kubectl port-forward -n demo svc/source 27018:27017
 
-export KUBECONFIG=/home/arnob/Downloads/configs/ui-demo-kubeconfig.yaml
-export MONGODB_NAMESPACE=demo
-export MONGODB_NAME=source
-export INSERTION_SIZE_IN_GiB=5
+export MONGODB_USERNAME=root
+export MONGODB_PASSWORD=12345
+EXPORT MONGODB_LOCAL_PORT=27018
+
+go run main.go
 ```
 
 ## Observation
