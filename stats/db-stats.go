@@ -3,6 +3,7 @@ package stats
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/ArnobKumarSaha/mongo/database"
 	"github.com/ArnobKumarSaha/mongo/utils"
 	"go.mongodb.org/mongo-driver/bson"
@@ -10,6 +11,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 var (
@@ -54,6 +56,8 @@ func Run(client *mongo.Client) {
 		log.Fatal(err)
 	}
 	utils.WriteFile(dir, "_", indentedData)
+	fmt.Printf("sleep starts. ")
+	time.Sleep(time.Minute * 10)
 }
 
 func databaseStats(db *mongo.Database) {
