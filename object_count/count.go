@@ -3,6 +3,7 @@ package object_count
 import (
 	"context"
 	"fmt"
+	"github.com/ArnobKumarSaha/mongo/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -30,7 +31,7 @@ func CompareObjectsCount(pc, sc *mongo.Client) (int64, error) {
 	for i := 0; i < len(masterDBs.(primitive.A)); i++ {
 		masterDB := masterDBs.(primitive.A)[i].(map[string]interface{})
 		dbname := masterDB["name"].(string)
-		if !skipDB(dbname) {
+		if !utils.SkipDB(dbname) {
 			dbList = append(dbList, dbname)
 			objectCounts := int64(0)
 			collectionNames, err := pc.Database(dbname).ListCollectionNames(context.TODO(), bson.D{})
@@ -39,7 +40,7 @@ func CompareObjectsCount(pc, sc *mongo.Client) (int64, error) {
 			}
 
 			for _, collectionName := range collectionNames {
-				if !skipCollection(collectionName) {
+				if !utils.SkipCollection(collectionName) {
 					count, err := pc.Database(dbname).Collection(collectionName).CountDocuments(context.TODO(), bson.D{})
 					if err != nil {
 						return -1, err
@@ -64,7 +65,7 @@ func CompareObjectsCount(pc, sc *mongo.Client) (int64, error) {
 		}
 
 		for _, collectionName := range collectionNames {
-			if !skipCollection(collectionName) {
+			if !utils.SkipCollection(collectionName) {
 				count, err := sc.Database(dbname).Collection(collectionName).CountDocuments(context.TODO(), bson.D{})
 				if err != nil {
 					return -1, err
@@ -85,16 +86,4 @@ func CompareObjectsCount(pc, sc *mongo.Client) (int64, error) {
 	}
 
 	return 0, nil
-}
-
-func skipDB(dbname string) bool {
-	return dbname == "admin" ||
-		dbname == "config" ||
-		dbname == "local"
-}
-
-func skipCollection(collectionName string) bool {
-	return collectionName == "system.profile" ||
-		collectionName == "system.js" ||
-		collectionName == "system.views"
 }
