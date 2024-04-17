@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
+	"github.com/ArnobKumarSaha/mongo/insert"
 	"github.com/ArnobKumarSaha/mongo/mongoclient"
-	"github.com/ArnobKumarSaha/mongo/stats"
 	"log"
 )
 
@@ -16,7 +16,7 @@ func main() {
 		}
 	}()
 	//object_count.Run(client)
-	//insert.Run(client)
+	insert.Run(client)
 	//latency.Run(client)
-	stats.Run(client)
+	//stats.Run(client)
 }

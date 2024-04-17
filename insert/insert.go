@@ -6,6 +6,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
 	"math/rand"
+	"os"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -19,9 +21,38 @@ var (
 	batchSize     = 100000
 	numGoroutines = 5
 	databases     = []string{"aa", "bb", "cc"}
-	collections   = []string{"one", "two", "three", "four"}
+	collections   = []string{"one", "two"}
 	checkpoints   []float64
 )
+
+func init() {
+	iSz := os.Getenv("INSERTION_SIZE_IN_GiB")
+	if iSz != "" {
+		iSzInt, err := strconv.Atoi(iSz)
+		if err != nil {
+			log.Fatal(err)
+		}
+		dataSize = dataSize * iSzInt
+	}
+
+	bSz := os.Getenv("BATCH_SIZE")
+	if bSz != "" {
+		bSzInt, err := strconv.Atoi(bSz)
+		if err != nil {
+			log.Fatal(err)
+		}
+		batchSize = bSzInt
+	}
+	gr := os.Getenv("NUMBER_OF_GOROUTINE")
+	if gr != "" {
+		grInt, err := strconv.Atoi(gr)
+		if err != nil {
+			log.Fatal(err)
+		}
+		numGoroutines = grInt
+	}
+	fmt.Printf("INSERTION_SIZE_IN_GiB=%d, BATCH_SIZE=%d, NUMBER_OF_GOROUTINE=%d\n", dataSize/(1024*1024*1024), batchSize, numGoroutines)
+}
 
 func startInsertionGoRoutine(ctx context.Context, client *mongo.Client, rt int) {
 	defer wg.Done()

@@ -7,11 +7,15 @@ spec:
   containers:
   - env:
     - name: MONGODB_NAME
-      value: "source"
+      value: "repl6"
     - name: MONGODB_NAMESPACE
       value: "demo"
     - name: INSERTION_SIZE_IN_GiB
-      value: "100"
+      value: "1" # Default 5
+    - name: BATCH_SIZE
+      value: "10000" # Default 100000
+    - name: NUMBER_OF_GOROUTINE
+      value: "3" # Default 5
     image: arnobkumarsaha/mongo-util
     imagePullPolicy: Always
     name: util
