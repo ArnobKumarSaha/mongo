@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: util
+  namespace: demo
+spec:
+  template:
+    spec:
+      containers:
+      - name: util
+        env:
+        - name: MONGODB_NAME
+          value: "repl6"
+        - name: MONGODB_NAMESPACE
+          value: "demo"
+#        - name: INSERTION_SIZE_IN_GiB
+#          value: "1" # Default 5
+#        - name: BATCH_SIZE
+#          value: "10000" # Default 100000
+#        - name: NUMBER_OF_GOROUTINE
+#          value: "3" # Default 5
+        resources:
+          requests:
+            cpu: 1
+            memory: 1Gi
+        image: arnobkumarsaha/mongo-util
+        imagePullPolicy: Always
+      serviceAccountName: mongo-util
+      restartPolicy: Never
+  backoffLimit: 4

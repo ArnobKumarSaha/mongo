@@ -3,10 +3,10 @@ package stats
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/ArnobKumarSaha/mongo/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"k8s.io/klog/v2"
 	"log"
 	"path/filepath"
 	"strings"
@@ -18,7 +18,7 @@ func collectionStats(db *mongo.Database, coll string) {
 	err := db.RunCommand(context.TODO(), cmd).Decode(&result)
 	if err != nil {
 		if strings.Contains(err.Error(), "is a view, not a collection") {
-			fmt.Println(err.Error())
+			klog.Infoln(err.Error())
 			return
 		} else {
 			log.Fatal(err)

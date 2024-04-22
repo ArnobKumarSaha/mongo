@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"gomodules.xyz/go-sh"
+	"k8s.io/klog/v2"
 	"strings"
 )
 
@@ -15,24 +16,24 @@ func ByExec() {
 	shSession := getCommand("newer-0", "demo", 3)
 	output, err := shSession.Output()
 	if err != nil {
-		fmt.Printf("cant get output, err %s\n", err)
+		klog.Infof("cant get output, err %s\n", err)
 		return
 	}
 
 	errOutput := buf.String()
 	if errOutput != "" {
-		fmt.Printf("failed to execute command, stderr: %s", errOutput)
+		klog.Infof("failed to execute command, stderr: %s", errOutput)
 		return
 	}
 
 	outStr := string(output)
-	fmt.Println(outStr + "\n\n")
+	klog.Infoln(outStr + "\n\n")
 	slice := strings.Split(outStr, "\n")
 	for i, _ := range slice {
 		if i == 0 {
 			continue
 		}
-		fmt.Printf("%s , ", slice[i])
+		klog.Infof("%s , ", slice[i])
 	}
 }
 

@@ -3,11 +3,11 @@ package stats
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/ArnobKumarSaha/mongo/database"
 	"github.com/ArnobKumarSaha/mongo/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"k8s.io/klog/v2"
 	"log"
 	"os"
 	"path/filepath"
@@ -56,7 +56,7 @@ func Run(client *mongo.Client) {
 		log.Fatal(err)
 	}
 	utils.WriteFile(dir, "_", indentedData)
-	fmt.Printf("sleep starts. ")
+	klog.Infof("sleep starts. You can run `kubectl cp demo/util:/app/all-stats /tmp/data` now.")
 	time.Sleep(time.Minute * 10)
 }
 

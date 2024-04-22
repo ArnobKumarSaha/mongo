@@ -2,8 +2,8 @@ package insert
 
 import (
 	"context"
-	"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
+	"k8s.io/klog/v2"
 	"log"
 	"math/rand"
 	"os"
@@ -51,16 +51,16 @@ func init() {
 		}
 		numGoroutines = grInt
 	}
-	fmt.Printf("INSERTION_SIZE_IN_GiB=%d, BATCH_SIZE=%d, NUMBER_OF_GOROUTINE=%d\n", dataSize/(1024*1024*1024), batchSize, numGoroutines)
+	klog.Infof("INSERTION_SIZE_IN_GiB=%d, BATCH_SIZE=%d, NUMBER_OF_GOROUTINE=%d\n", dataSize/(1024*1024*1024), batchSize, numGoroutines)
 }
 
 func startInsertionGoRoutine(ctx context.Context, client *mongo.Client, rt int) {
 	defer wg.Done()
-	fmt.Printf("Starts goroutine %d.\n", rt)
+	klog.Infof("Starts goroutine %d.\n", rt)
 	for {
 		select {
 		case <-stopPrinting:
-			fmt.Println("Stopping goroutine.")
+			klog.Infoln("Stopping goroutine.")
 			return
 		default:
 			batch := make([]interface{}, batchSize)
@@ -77,7 +77,7 @@ func startInsertionGoRoutine(ctx context.Context, client *mongo.Client, rt int) 
 				log.Fatal(err)
 			}
 
-			fmt.Printf("Inserted %d documents in %s/%s \n", batchSize, coll.Database().Name(), coll.Name())
+			klog.Infof("Inserted %d documents in %s/%s \n", batchSize, coll.Database().Name(), coll.Name())
 		}
 	}
 }
@@ -102,7 +102,7 @@ func Run(client *mongo.Client) {
 
 	err := checkpointPreviousSizes(ctx, client)
 	if err != nil {
-		fmt.Printf("err on checkpointing = %v", err)
+		klog.Infof("err on checkpointing = %v", err)
 		return
 	}
 	go checkCondition(ctx, client)

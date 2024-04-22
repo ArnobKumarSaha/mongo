@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ArnobKumarSaha/mongo/database"
 	"go.mongodb.org/mongo-driver/mongo"
+	"k8s.io/klog/v2"
 	"reflect"
 	"time"
 )
@@ -19,7 +20,7 @@ func checkCondition(ctx context.Context, client *mongo.Client) {
 			sz, _ := calcTotalStorageSize(ctx, client)
 			convertToReadableUnit(sz)
 			if int(sz) >= dataSize {
-				fmt.Printf("Stopping all goroutines. Time elapsed: %v\n", time.Since(start))
+				klog.Infof("Stopping all goroutines. Time elapsed: %v\n", time.Since(start))
 				close(stopPrinting)
 				return
 			}
@@ -99,7 +100,7 @@ func convertToReadableUnit(sz float64) {
 		unit = "TiB"
 		break
 	default:
-		fmt.Printf("divCount %v is way too big \n", divCount)
+		klog.Infof("divCount %v is way too big \n", divCount)
 	}
-	fmt.Printf("%v %s inserted. Current time %v \n", sz, unit, time.Now())
+	klog.Infof("%v %s inserted. Current time %v \n", sz, unit, time.Now())
 }

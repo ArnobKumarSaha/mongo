@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+	"k8s.io/klog/v2"
 	"kmodules.xyz/client-go/tools/portforward"
 	"log"
 )
@@ -19,7 +20,7 @@ func ConnectToPod(tunnel *portforward.Tunnel, password string) *mongo.Client {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Connected to secondary %v on port %v \n", tunnel.Name, tunnel.Local)
+	klog.Infof("Connected to secondary %v on port %v \n", tunnel.Name, tunnel.Local)
 	return secondaryClient
 }
 

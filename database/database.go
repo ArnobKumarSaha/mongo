@@ -2,10 +2,10 @@ package database
 
 import (
 	"context"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"k8s.io/klog/v2"
 	"strings"
 )
 
@@ -52,13 +52,13 @@ func GetPrimaryAndSecondaries(ctx context.Context, client *mongo.Client) ([]stri
 	var result bson.M
 	err := adminDB.RunCommand(ctx, bson.D{{"replSetGetStatus", 1}}).Decode(&result)
 	if err != nil {
-		fmt.Println("Error running rs.status():", err)
+		klog.Infoln("Error running rs.status():", err)
 		return nil, err
 	}
 
 	members, ok := result["members"].(primitive.A)
 	if !ok {
-		fmt.Println("Error parsing members array")
+		klog.Infoln("Error parsing members array")
 		return nil, err
 	}
 
@@ -67,7 +67,7 @@ func GetPrimaryAndSecondaries(ctx context.Context, client *mongo.Client) ([]stri
 	for _, member := range members {
 		memberInfo, ok := member.(primitive.M)
 		if !ok {
-			fmt.Println("Error parsing member information")
+			klog.Infoln("Error parsing member information")
 			continue
 		}
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"k8s.io/klog/v2"
 	"log"
 	"os"
 )
@@ -30,6 +31,6 @@ func ConnectLocal() *mongo.Client {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Connected to MongoDB")
+	klog.Infoln("Connected to MongoDB")
 	return client
 }

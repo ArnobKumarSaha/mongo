@@ -56,11 +56,6 @@ func Run(client *mongo.Client) {
 	klog.Infof("starts at %v \n", start)
 	sc := mongoclient.ConnectToPod(tunnelPod, password)
 	defer func() {
-		if err := client.Disconnect(context.Background()); err != nil {
-			log.Fatal(err)
-		}
-	}()
-	defer func() {
 		if err := sc.Disconnect(context.Background()); err != nil {
 			log.Fatal(err)
 		}

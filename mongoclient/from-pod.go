@@ -34,7 +34,7 @@ func ConnectFromPod() *mongo.Client {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Connected to MongoDB")
+	klog.Infoln("Connected to MongoDB")
 	return client
 }
 

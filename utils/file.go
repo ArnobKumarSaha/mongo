@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"fmt"
+	"k8s.io/klog/v2"
 	"log"
 	"os"
 )
@@ -9,7 +9,7 @@ import (
 func MakeDir(dir string) {
 	_, err := os.Stat(dir)
 	if err == nil {
-		fmt.Printf("Directory %s already exists; cleaning up.\n", dir)
+		klog.Infof("Directory %s already exists; cleaning up.\n", dir)
 		err = os.RemoveAll(dir)
 		if err != nil {
 			log.Fatal(err)
